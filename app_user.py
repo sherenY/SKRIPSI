@@ -24,27 +24,34 @@ selected_filenames = [lagu for lagu in [lagu1, lagu2, lagu3] if lagu != ""]
 
 jumlah_rekomendasi = st.slider("✅ Pilih Jumlah Lagu yang Ingin Direkomendasikan", min_value=5, max_value=30, value=15)
 
-def get_song_recommendations(selected_songs, song_data, max_recommendations=15):
+def get_song_recommendations(selected_songs, song_data, k=20, max_recommendations=15):
+    # Ambil fitur (skip 'filename' dan 'genre')
     feature_columns = song_data.columns[2:]
     song_features = song_data[feature_columns].values
-    knn = NearestNeighbors(n_neighbors=min(len(song_data), max_recommendations + 10), metric='cosine')
+
+    # Inisialisasi KNN dengan nilai K yang diberikan
+    knn = NearestNeighbors(n_neighbors=k, metric='cosine')
     knn.fit(song_features)
 
     all_recommended_songs = []
 
     for song in selected_songs:
+        # Ambil index dan fitur lagu yang dipilih
         song_index = song_data[song_data['filename'] == song].index[0]
         song_feature = song_features[song_index].reshape(1, -1)
 
+        # Cari tetangga terdekat
         distances, indices = knn.kneighbors(song_feature)
 
-        for i in range(len(indices[0])):
-            song_name = song_data['filename'][indices[0][i]]
+        for idx in indices[0]:
+            song_name = song_data['filename'][idx]
             if song_name not in selected_songs:
                 all_recommended_songs.append(song_name)
 
+    # Hapus duplikat sambil mempertahankan urutan
     all_recommended_songs = list(dict.fromkeys(all_recommended_songs))
 
+    # Ambil hanya sesuai jumlah rekomendasi yang diminta
     return all_recommended_songs[:max_recommendations]
 
 
