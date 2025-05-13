@@ -24,7 +24,7 @@ selected_filenames = [lagu for lagu in [lagu1, lagu2, lagu3] if lagu != ""]
 
 jumlah_rekomendasi = st.slider("✅ Pilih Jumlah Lagu yang Ingin Direkomendasikan", min_value=5, max_value=30, value=15)
 
-def get_song_recommendations(selected_songs, song_data, k=20, max_recommendations=15):
+def get_song_recommendations(selected_songs, song_data, k=35, max_recommendations=15):
     feature_columns = song_data.columns[2:]
     song_features = song_data[feature_columns].values
 
